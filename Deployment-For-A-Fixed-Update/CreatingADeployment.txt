@@ -1,0 +1,35 @@
+The following Deployment manifest declares three replicas, and the attribute spec.strategy.type is set to Recreate. Add the manifest to the file deployment.yaml:
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-generator
+spec:
+  replicas: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: random-generator
+  template:
+    metadata:
+      labels:
+        app: random-generator
+    spec:
+      containers:
+      - image: k8spatterns/random-generator:1.0
+        name: random-generator
+        readinessProbe:
+          httpGet:
+            path: /info
+            port: 8080
+          initialDelaySeconds: 5
+Execute the following command to create the Deployment:
+
+kubectl apply -f deployment.yaml
+
+You should find that three replicas have been created:
+
+kubectl get pods -l app=random-generator
+

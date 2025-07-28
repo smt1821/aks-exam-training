@@ -1,0 +1,19 @@
+The Recreate strategy has the effect of setting maxUnavailable to the number of declared replicas. This means it first kills all containers from the current version and then starts all new containers simultaneously when the old containers are evicted. The result of this sequence is that downtime occurs while all containers with old versions are stopped, and no new containers are ready to handle incoming requests. On the positive side, two different versions of the containers won’t be running at the same time, so service consumers can connect to only one version at a time.
+
+The following image shows the fixed update process initiated by changing the container image tag from 1.0 to 1.1:
+
+Deployment with fixed update
+
+One of the ways to update the container image for a Pod template is using the following command. Here we are going to update to tag 2.0:
+
+kubectl set image deployment random-generator random-generator=k8spatterns/random-generator:2.0
+
+You can check the rollout history to see if it contains the new revision. The history contains revision 1 for the initial version of the Pod template, and revision 2 for the updated container image:
+
+kubectl rollout history deployment random-generator
+
+You can find the change in the details of revision 2:
+
+kubectl rollout history deployment random-generator --revision=2
+
+The Deployment Recreate strategy has pros and cons. It's a good option for development environments where updating all Pods at once won't have an impact on customers. In production environments, this strategy may cause downtime while applications are starting up.

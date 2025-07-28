@@ -1,0 +1,11 @@
+Declarative Deployment
+The heart of the Declarative Deployment pattern is the Kubernetes Deployment resource. This abstraction encapsulates the upgrade and rollback processes of a group of containers and makes their execution a repeatable and automated activity.
+
+Fixed Deployment
+A RollingUpdate strategy is useful for ensuring zero downtime during the update process. However, the side effect of this approach is that during the update process, two versions of the container are running at the same time. That may cause issues for the service consumers, especially when the update process has introduced backward-incompatible changes in the service APIs and the client is not capable of dealing with them. For this kind of scenario, you can use the Recreate strategy.
+
+In this lab, you will learn how to:
+
+Recognize the fixed deployment strategy
+Create a Deployment and update the container image
+Interact with the rollout history
