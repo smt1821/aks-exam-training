@@ -1,0 +1,18 @@
+The following manifest defines a Pod without tolerations. Add it to pod.yaml:
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: random-generator
+spec:
+  containers:
+  - image: k8spatterns/random-generator:1.0
+    name: random-generator
+Create the Pod object from the YAML manifest:
+
+kubectl apply -f pod.yaml
+
+You will find that the Pod cannot be scheduled, as it doesn't provide the toleration for node01. The Pod waits in the Pending status:
+
+kubectl get pod random-generator

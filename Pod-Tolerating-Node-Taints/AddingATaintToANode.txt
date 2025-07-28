@@ -1,0 +1,18 @@
+Run the following command to inspect taints of the worker node named node01:
+
+kubectl describe node node01 | grep "Taints"
+
+Our node starts out without any taints, and thus the command renders the following output:
+
+Taints:             <none>
+A taint with the key node-role.kubernetes.io/worker can be added to the node by using the following command. This marks the node as unschedulable except when a Pod tolerates the taint:
+
+kubectl taint node node01 node-role.kubernetes.io/worker="true":NoSchedule
+
+Verify that the taint has been added properly:
+
+kubectl describe node node01 | grep "Taints"
+
+This command will render the following output:
+
+Taints:             node-role.kubernetes.io/worker=true:NoSchedule

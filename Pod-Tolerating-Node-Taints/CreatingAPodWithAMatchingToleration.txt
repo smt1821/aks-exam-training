@@ -1,0 +1,28 @@
+We'll change the Pod to add a toleration. The following definition tolerates (i.e., considers for scheduling) nodes that have a taint with key node-role.kubernetes.io/worker.
+
+Replace the contents of pod.yaml with this definition:
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: random-generator
+spec:
+  containers:
+  - image: k8spatterns/random-generator:1.0
+    name: random-generator
+  tolerations:
+  - key: node-role.kubernetes.io/worker
+    operator: Exists
+    effect: NoSchedule 
+Create the Pod object from the YAML manifest:
+
+kubectl apply -f pod.yaml
+
+You will find that the Pod will be scheduled on the worker node:
+
+kubectl get pod random-generator -o wide
+
+There are hard taints that prevent scheduling on a node (effect=NoSchedule), soft taints that try to avoid scheduling on a node (effect=PreferNoSchedule), and taints that can evict already-running Pods from a node (effect=NoExecute).
+
+Taints and tolerations allow for complex use cases like having dedicated nodes for an exclusive set of Pods, and can force eviction of Pods from problematic nodes by tainting those nodes.
