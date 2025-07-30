@@ -1,0 +1,9 @@
+The Pod will only be scheduled on a node that was labeled with the key topology.kubernetes.io/zone. You can add this label to the node with the following command:
+
+kubectl label node node01 topology.kubernetes.io/zone=us-west-1
+
+The Pod random-generator should now be allowed to run on node01:
+
+kubectl get pods -o wide
+
+Topology spread constraints is a feature that is still evolving at the time of this writing. Built-in cluster-level topology spread constraints allow certain imbalances based on default Kubernetes labels and give you the ability to honor or ignore node affinity and taint policies.

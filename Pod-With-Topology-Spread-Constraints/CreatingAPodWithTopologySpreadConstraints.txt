@@ -1,0 +1,37 @@
+Let’s look at an example to understand how topology spread constraints can help. Let’s suppose we have an application with two replicas and a two-node cluster. To avoid downtime and a single point of failure, we can use Pod anti-affinity rules to prevent the coexistence of the Pods on the same node and spread them into both nodes. While this setup makes sense, it will prevent you from performing rolling upgrades because the third replacement Pod cannot be placed on the existing nodes due to the Pod anti-affinity constraints. We will have to either add another node or change the Deployment strategy from RollingUpdate to Recreate.
+
+Topology spread constraints would be a better solution in this situation, as they allow you to tolerate some degree of uneven Pod distribution when the cluster is running out of resources. The following manifest allows the placement of the third rolling deployment Pod on one of the two nodes because it allows imbalances—i.e., a skew of one Pod.
+
+Add the manifest to pod.yaml:
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: random-generator
+  labels:
+    app: bar
+spec:
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app: bar
+  containers:
+  - image: k8spatterns/random-generator:1.0
+    name: random-generator
+Run the following command to inspect the nodes and their labels. In this example, we are only dealing with a single worker node named node01:
+
+kubectl get nodes --show-labels
+
+Create the Pod object from the YAML manifest:
+
+kubectl apply -f pod.yaml
+
+You will find that the Pod cannot be scheduled. The Pod waits in the Pending status:
+
+kubectl get pod random-generator
+
+While the label selector of the topology spread constraint matches, the node has not been labeled with the topology key topology.kubernetes.io/zone.
